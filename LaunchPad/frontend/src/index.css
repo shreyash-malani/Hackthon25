@@ -1,0 +1,31 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body::-webkit-scrollbar {
+    display: none; /* Chrome, Safari */
+}
+
+.fixed {
+  position: fixed;
+}
+
+.bottom-5 {
+  bottom: 1.25rem;
+}
+
+.right-5 {
+  right: 1.25rem;
+}
+
+.bottom-16 {
+  bottom: 4rem;
+}
+
+.w-80 {
+  width: 20rem;
+}
+
+.z-50 {
+  z-index: 50;
+}

@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EcoCart Chatbot</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+      display: flex;
+      height: 100vh;
+      background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+      overflow: hidden;
+    }
+
+    .left-side {
+      flex: 2;
+      background-image: url('/EcoCart/frontend/assets/tree.jpg');
+      background-size: cover;
+      background-position: center;
+      position: relative;
+      filter: brightness(0.8);
+    }
+
+    .left-side::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.4);
+      -webkit-backdrop-filter: blur(2px);
+      backdrop-filter: blur(2px);
+    }
+
+    .chat-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: #051501;
+      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(10px);
+      border-left: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 24px;
+      color: #ffffff;
+    }
+
+    h2 {
+      margin: 0;
+      margin-bottom: 20px;
+      text-align: center;
+      color: #aef9af;
+      font-weight: 600;
+      font-size: 24px;
+    }
+
+    .chat-box {
+      flex: 1;
+      overflow-y: auto;
+      padding-right: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .bubble {
+      padding: 14px 18px;
+      border-radius: 16px;
+      max-width: 90%;
+      font-size: 15px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
+
+    .user-bubble {
+      align-self: flex-end;
+      background: #d7ffda;
+      color: #1a301a;
+      box-shadow: 0 4px 10px rgba(50, 255, 100, 0.2);
+    }
+
+    .bot-bubble {
+      align-self: flex-start;
+      background: #1e2b23;
+      color: #e9ffe3;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .input-area {
+      display: flex;
+      margin-top: 20px;
+      gap: 10px;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      padding: 14px;
+      border-radius: 10px;
+      border: none;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      font-size: 16px;
+      outline: none;
+    }
+
+    input::placeholder {
+      color: #cccccc;
+    }
+
+    button {
+      background-color: #56db70;
+      color: #0c2d13;
+      font-weight: bold;
+      padding: 14px 20px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #3fa55a;
+    }
+
+    .loading {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-style: italic;
+      color: #c8ffc8;
+    }
+
+    .typing-animation {
+      width: 10px;
+      height: 10px;
+      background: #aef9af;
+      border-radius: 50%;
+      animation: bounce 1.2s infinite ease-in-out;
+    }
+
+    .typing-animation:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .typing-animation:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: scale(0.6); }
+      50% { transform: scale(1); }
+    }
+
+    .navbar {
+      background-color: white !important;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .navbar-brand {
+      color: #000000 !important;
+      font-weight: 600;
+      font-size: 1.5rem;
+      text-shadow: 0 0 8px #61dafb, 0 0 16px #61dafb;
+      margin-left: 1rem;
+      z-index: 1050;
+    }
+
+    .navbar-toggler {
+      position: fixed;
+      top: 0.45rem;
+      right: 1rem;
+      width: 48px;
+      height: 48px;
+      background-color: white;
+      border: 2px solid #28a745;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 12px #28a74540;
+      z-index: 1100;
+      transition: all 0.3s ease;
+    }
+
+    .navbar-toggler:hover {
+      background-color: #eaffed;
+      box-shadow: 0 0 18px #28a74580;
+      transform: scale(1.05);
+    }
+
+    .navbar-toggler-icon {
+      position: relative;
+      width: 24px;
+      height: 2px;
+      background-color: #28a745;
+      border-radius: 2px;
+      transition: background 0.3s ease;
+      display: block;
+      margin: 0 auto;
+    }
+
+    .navbar-toggler-icon::before,
+    .navbar-toggler-icon::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      width: 24px;
+      height: 2px;
+      background-color: #28a745;
+      border-radius: 2px;
+      transition: transform 0.3s ease, top 0.3s ease, opacity 0.3s ease;
+    }
+
+    .navbar-toggler-icon::before { top: -8px; }
+    .navbar-toggler-icon::after { top: 8px; }
+
+    .navbar-toggler.active .navbar-toggler-icon {
+      background-color: transparent;
+    }
+
+    .navbar-toggler.active .navbar-toggler-icon::before {
+      transform: rotate(45deg);
+      top: 0;
+    }
+
+    .navbar-toggler.active .navbar-toggler-icon::after {
+      transform: rotate(-45deg);
+      top: 0;
+    }
+
+    .nav-link {
+      color: #2e7d32 !important;
+      font-weight: 600;
+      font-size: 1.1rem;
+      transition: all 0.3s ease;
+    }
+
+    .nav-link:hover {
+      color: #1b5e20 !important;
+      padding-left: 8px;
+    }
+
+    .offcanvas {
+      background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+      box-shadow: -4px 0 10px rgba(0, 0, 0, 0.2);
+      border-left: 2px solid #28a745;
+      transition: transform 0.4s ease;
+      z-index: 1060;
+    }
+
+    .offcanvas-header {
+      border-bottom: 1px solid #a5d6a7;
+    }
+
+    .offcanvas-title {
+      font-weight: 600;
+      color: #2e7d32;
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar fixed-top ">
+    <div class="container-fluid d-flex justify-content-between align-items-center">
+      <a class="navbar-brand" href="/EcoCart/frontend/pages/dashboard.html">EcoCart</a>
+
+      <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-label="Open navigation menu">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="offcanvas offcanvas-end" id="offcanvasNavbar">
+        <div class="offcanvas-header">
+          <h5 class="offcanvas-title">Menu</h5>
+        </div>
+        <div class="offcanvas-body">
+          <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+            <li class="nav-item"><a class="nav-link" href="#">Profile</a></li>
+            <li class="nav-item"><a class="nav-link" href="/EcoCart/frontend/pages/dashboard.html">Dashboard</a></li>
+            <li class="nav-item"><a class="nav-link" href="/EcoCart/frontend/pages/ecotips.html">Ecotips</a></li>
+            <li class="nav-item"><a class="nav-link" href="#">Wishlist</a></li>
+            <li class="nav-item"><a class="nav-link" href="/EcoCart/frontend/pages/chatbot.html">Chatbot</a></li>
+            <li class="nav-item"><a class="nav-link" href="/EcoCart/frontend/pages/LandingPage.html">Signout</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="left-side"></div>
+
+  <div class="chat-container">
+    <h2>🌿 EcoBot</h2>
+    <div id="chat-box" class="chat-box"></div>
+
+    <div class="input-area">
+      <input type="text" id="question" placeholder="Ask something eco-friendly..." onkeydown="handleKeyPress(event)" />
+      <button onclick="sendQuestion()">Send</button>
+    </div>
+  </div>
+
+  <script>
+    function handleKeyPress(event) {
+      if (event.key === 'Enter') {
+        sendQuestion();
+      }
+    }
+
+    async function sendQuestion() {
+      const questionInput = document.getElementById("question");
+      const chatBox = document.getElementById("chat-box");
+      const question = questionInput.value.trim();
+      if (!question) return;
+
+      chatBox.innerHTML += `<div class="bubble user-bubble">${question}</div>`;
+      questionInput.value = "";
+      chatBox.scrollTop = chatBox.scrollHeight;
+
+      const loadingDiv = document.createElement("div");
+      loadingDiv.className = "bubble bot-bubble loading";
+      loadingDiv.innerHTML = `
+        <div class="typing-animation"></div>
+        <div class="typing-animation"></div>
+        <div class="typing-animation"></div>
+      `;
+      chatBox.appendChild(loadingDiv);
+      chatBox.scrollTop = chatBox.scrollHeight;
+
+      try {
+        const response = await fetch("http://127.0.0.1:5000/ask", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ question: question })
+        });
+
+        const data = await response.json();
+        loadingDiv.remove();
+        chatBox.innerHTML += `<div class="bubble bot-bubble">${data.answer.replace(/\n/g, "<br>")}</div>`;
+        chatBox.scrollTop = chatBox.scrollHeight;
+      } catch (error) {
+        loadingDiv.remove();
+        chatBox.innerHTML += `<div class="bubble bot-bubble">❌ EcoBot error: ${error}</div>`;
+        chatBox.scrollTop = chatBox.scrollHeight;
+      }
+    }
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
